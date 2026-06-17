@@ -1,94 +1,89 @@
 connectors:
-  # Each connector definition represents a configured integration point
-  # with an external or internal system. Values marked ${ENV_VAR} are
-  # resolved from the runtime environment. Values marked "# options: ..."
-  # indicate valid choices for that field.
-
   example_crm:
-    id: "crm-primary"
-    type: "http"
-    base_url: "${CRM_BASE_URL}"
-    timeout_ms: 5000
+    id: "${ENV_VAR}"
+    type: REDACTED
+    base_url: "${ENV_VAR}"
+    timeout_ms: REDACTED
     auth:
-      strategy: "oauth2"
-      token_url: "${CRM_TOKEN_URL}"
-      client_id: "${CRM_CLIENT_ID}"
-      client_secret: "${CRM_CLIENT_SECRET}"
-      scope: "${CRM_OAUTH_SCOPE}"
-      token_cache_ttl_seconds: 3600
+      strategy: REDACTED
+      token_url: "${ENV_VAR}"
+      client_id: "${ENV_VAR}"
+      client_secret: "${ENV_VAR}"
+      scope: "${ENV_VAR}"
+      token_cache_ttl_seconds: REDACTED
     retry:
-      policy: "default"
-      max_attempts: 3
+      policy: REDACTED
+      max_attempts: REDACTED
     rate_limit:
-      requests_per_second: 10
-      burst: 20
+      requests_per_second: REDACTED
+      burst: REDACTED
     health_check:
-      enabled: true
-      endpoint: "${CRM_BASE_URL}/health"
-      interval_seconds: 60
-      failure_threshold: 3
+      enabled: REDACTED
+      endpoint: "${ENV_VAR}"
+      interval_seconds: REDACTED
+      failure_threshold: REDACTED
 
   example_data_warehouse:
-    id: "dwh-primary"
-    type: "jdbc"
-    connection_string: "${DWH_CONNECTION_STRING}"
+    id: "${ENV_VAR}"
+    type: REDACTED
+    connection_string: "${ENV_VAR}"
     pool:
-      min_connections: 2
-      max_connections: 10
-      acquire_timeout_ms: 3000
-      idle_timeout_ms: 600000
+      min_connections: REDACTED
+      max_connections: REDACTED
+      acquire_timeout_ms: REDACTED
+      idle_timeout_ms: REDACTED
     auth:
-      strategy: "credentials"
-      username: "${DWH_USERNAME}"
-      password: "${DWH_PASSWORD}"
-    schema: "${DWH_SCHEMA}"
-    read_only: true
+      strategy: REDACTED
+      username: "${ENV_VAR}"
+      password: "${ENV_VAR}"
+    schema: "${ENV_VAR}"
+    read_only: REDACTED
     ssl:
-      enabled: true
-      verify_cert: true
-      ca_cert_path: "${DWH_CA_CERT_PATH}"
+      enabled: REDACTED
+      verify_cert: REDACTED
+      ca_cert_path: "${ENV_VAR}"
 
   example_message_broker:
-    id: "broker-primary"
-    type: "kafka"
-    bootstrap_servers: "${KAFKA_BOOTSTRAP_SERVERS}"
+    id: "${ENV_VAR}"
+    type: REDACTED
+    bootstrap_servers: "${ENV_VAR}"
     auth:
-      strategy: "sasl_ssl"
-      mechanism: "SCRAM-SHA-512"
-      username: "${KAFKA_USERNAME}"
-      password: "${KAFKA_PASSWORD}"
+      strategy: REDACTED
+      mechanism: REDACTED
+      username: "${ENV_VAR}"
+      password: "${ENV_VAR}"
     ssl:
-      enabled: true
-      verify_cert: true
+      enabled: REDACTED
+      verify_cert: REDACTED
     producer:
-      acks: "all"
-      compression: "lz4"
-      batch_size_bytes: 65536
-      linger_ms: 5
+      acks: REDACTED
+      compression: REDACTED
+      batch_size_bytes: REDACTED
+      linger_ms: REDACTED
     consumer:
-      group_id: "${SERVICE_NAME}-consumer"
-      auto_offset_reset: "earliest"
-      max_poll_records: 500
-      session_timeout_ms: 30000
+      group_id: "${ENV_VAR}"
+      auto_offset_reset: REDACTED
+      max_poll_records: REDACTED
+      session_timeout_ms: REDACTED
 
   example_object_store:
-    id: "storage-primary"
-    type: "s3_compatible"
-    endpoint: "${STORAGE_ENDPOINT}"
-    region: "${STORAGE_REGION}"
-    bucket: "${STORAGE_BUCKET}"
+    id: "${ENV_VAR}"
+    type: REDACTED
+    endpoint: "${ENV_VAR}"
+    region: "${ENV_VAR}"
+    bucket: "${ENV_VAR}"
     auth:
-      strategy: "iam_role"
-      role_arn: "${STORAGE_ROLE_ARN}"
-    path_prefix: "${STORAGE_PATH_PREFIX}"
-    server_side_encryption: "AES256"
+      strategy: REDACTED
+      role_arn: "${ENV_VAR}"
+    path_prefix: "${ENV_VAR}"
+    server_side_encryption: REDACTED
 
 global:
-  connection_timeout_ms: 5000
-  default_retry_policy: "default"
+  connection_timeout_ms: REDACTED
+  default_retry_policy: REDACTED
   circuit_breaker:
-    enabled: true
-    failure_threshold_percent: 50
-    evaluation_window_seconds: 60
-    cooldown_seconds: 30
-    half_open_probe_count: 3
+    enabled: REDACTED
+    failure_threshold_percent: REDACTED
+    evaluation_window_seconds: REDACTED
+    cooldown_seconds: REDACTED
+    half_open_probe_count: REDACTED

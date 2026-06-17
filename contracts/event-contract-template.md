@@ -1,6 +1,6 @@
 # Event Contract Template
 
-Use this template when defining an event-based integration boundary where one system publishes events and one or more systems consume them.
+Use this template to define event-based integration boundaries between a publisher and one or more consumers. Populate all fields before review. Placeholder values use `{{PLACEHOLDER}}` notation.
 
 ---
 
@@ -11,41 +11,33 @@ Use this template when defining an event-based integration boundary where one sy
 | Contract ID | `{{CONTRACT_ID}}` |
 | Version | `{{SEMVER}}` |
 | Publisher | `{{PUBLISHING_SYSTEM_NAME}}` |
-| Consumers | `{{CONSUMING_SYSTEM_NAMES — comma separated}}` |
-| Transport | `{{Kafka / EventBridge / Pub/Sub / SQS / custom}}` |
+| Consumers | `{{CONSUMING_SYSTEM_NAMES}}` |
+| Transport | `{{TRANSPORT}}` |
 | Topic / Channel | `{{TOPIC_NAME}}` |
-| Encoding | `{{JSON / Avro / Protobuf}}` |
-| Schema Registry | `{{SCHEMA_REGISTRY_URL or "none"}}` |
+| Encoding | `{{ENCODING}}` |
+| Schema Registry | `{{SCHEMA_REGISTRY_URL}}` |
 | Owner Team | `{{OWNING_TEAM}}` |
-| Status | `{{draft / active / deprecated / retired}}` |
+| Status | `{{STATUS}}` |
 
 ---
 
 ## Event Types
 
-For each event type published under this contract:
-
 ### `{{domain.entity.action}}`
-
-**Description**: `{{What state change or occurrence this event represents}}`
-
-**Trigger condition**: `{{When the publisher emits this event}}`
 
 **Payload schema**: Reference to `{{SCHEMA_ID}}` version `{{VERSION}}`
 
-**Ordering guarantees**: `{{Strict per-key / best-effort / none}}`
+**Ordering guarantees**: `{{ORDERING_SPEC}}`
 
-**Deduplication**: `{{Publisher guarantees / Consumer responsibility / idempotency key field}}`
+**Deduplication**: `{{DEDUP_SPEC}}`
 
-**Retention**: `{{Duration events are retained on the topic}}`
+**Retention**: `{{RETENTION_PERIOD}}`
 
-**Expected volume**: `{{Events per second / minute / day under normal load}}`
+**Expected volume**: `{{VOLUME_ESTIMATE}}`
 
 ---
 
 ## Payload Envelope
-
-All events published under this contract use the following envelope:
 
 ```json
 {
@@ -60,41 +52,32 @@ All events published under this contract use the following envelope:
 }
 ```
 
-Event-type-specific data is contained in `payload`. The envelope structure is governed by the canonical event schema; only `payload` varies per event type.
-
 ---
 
 ## Consumer Obligations
 
-Consumers of this contract must:
-
-- Handle unknown fields gracefully (forward compatibility)
+- Handle unknown fields gracefully
 - Implement idempotent processing for all event types
-- Maintain a consumer group offset that allows replay within the retention window
-- Not assume event ordering across partitions unless ordering guarantees are explicitly stated above
+- Maintain consumer group offset within the retention window
 
 ---
 
 ## Compatibility Policy
 
-Event schema changes follow these rules:
-
 | Change Type | Classification | Notice Required |
 |---|---|---|
-| Add optional field to payload | Non-breaking | None |
-| Remove or rename existing field | Breaking | `{{N}}` days minimum |
-| Change field type | Breaking | `{{N}}` days minimum |
+| Add optional field | Non-breaking | None |
+| Remove or rename field | Breaking | `{{N}}` days |
+| Change field type | Breaking | `{{N}}` days |
 | Add new event type | Non-breaking | None |
-| Remove event type | Breaking | `{{N}}` days minimum |
-
-Consumers pin to schema versions via the schema registry. Publisher must maintain support for the previous major schema version for `{{N}}` days after a breaking change is deployed.
+| Remove event type | Breaking | `{{N}}` days |
 
 ---
 
 ## Operational Notes
 
-Dead-letter handling: `{{What consumers should do with events that cannot be processed}}`
+Dead-letter handling: `{{DLQ_SPEC}}`
 
-Backpressure: `{{Publisher behavior when consumers fall behind}}`
+Backpressure: `{{BACKPRESSURE_SPEC}}`
 
-Replay policy: `{{Whether and how consumers can request replay}}`
+Replay policy: `{{REPLAY_SPEC}}`

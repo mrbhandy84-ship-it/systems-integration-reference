@@ -1,6 +1,6 @@
 # API Contract Template
 
-Use this template when defining a new integration boundary between two systems communicating over HTTP/REST or a similar request-response protocol.
+Use this template to define integration boundaries between systems communicating over request-response protocols. Populate all fields before review. Placeholder values use `{{PLACEHOLDER}}` notation.
 
 ---
 
@@ -12,54 +12,46 @@ Use this template when defining a new integration boundary between two systems c
 | Version | `{{SEMVER}}` |
 | Provider | `{{PROVIDER_SYSTEM_NAME}}` |
 | Consumer | `{{CONSUMER_SYSTEM_NAME}}` |
-| Protocol | `{{HTTP / gRPC / GraphQL}}` |
+| Protocol | `{{PROTOCOL}}` |
 | Base URL | `{{BASE_URL}}` |
-| Auth Mechanism | `{{bearer / api_key / oauth2 / mtls}}` |
+| Auth Mechanism | `{{AUTH_MECHANISM}}` |
 | Owner Team | `{{OWNING_TEAM}}` |
-| Status | `{{draft / active / deprecated / retired}}` |
+| Status | `{{STATUS}}` |
 | Effective Date | `{{ISO_DATE}}` |
 
 ---
 
 ## Endpoints
 
-For each endpoint included in this contract:
-
 ### `{{METHOD}} {{/path/to/resource}}`
 
-**Description**: `{{What this endpoint does and when consumers should call it}}`
-
 **Request**
-- Headers: `{{Required and optional headers}}`
-- Path parameters: `{{Parameter name, type, constraints}}`
-- Query parameters: `{{Parameter name, type, required/optional}}`
+- Headers: `{{HEADERS}}`
+- Path parameters: `{{PATH_PARAMS}}`
+- Query parameters: `{{QUERY_PARAMS}}`
 - Body: Reference to `{{PAYLOAD_SCHEMA_ID}}` version `{{VERSION}}`
 
 **Response**
-- Success: `{{2xx status}}` — Reference to `{{RESPONSE_SCHEMA_ID}}`
-- Client error: `{{4xx status}}` — `{{Conditions that produce this status}}`
-- Server error: `{{5xx status}}` — `{{Conditions that produce this status}}`
+- Success: `{{2xx status}}`
+- Client error: `{{4xx status}}`
+- Server error: `{{5xx status}}`
 
-**Idempotency**: `{{Yes / No — key field if yes}}`
+**Idempotency**: `{{YES_NO}}`
 
-**Rate limits**: `{{Requests per window, burst limit, 429 behavior}}`
+**Rate limits**: `{{RATE_LIMIT_SPEC}}`
 
 ---
 
 ## Error Contract
 
-Standard error response shape for all endpoints in this contract:
-
 ```json
 {
   "error_code": "{{NAMESPACED_ERROR_CODE}}",
-  "message": "{{Human-readable description}}",
-  "request_id": "{{Correlation ID for tracing}}",
+  "message": "{{MESSAGE}}",
+  "request_id": "{{CORRELATION_ID}}",
   "details": {}
 }
 ```
-
-Error codes are namespaced by domain (`auth.`, `validation.`, `resource.`, `upstream.`). Consumers should handle error codes explicitly, not just HTTP status codes.
 
 ---
 
@@ -67,21 +59,21 @@ Error codes are namespaced by domain (`auth.`, `validation.`, `resource.`, `upst
 
 | Metric | Target |
 |---|---|
-| p50 latency | `{{ms}}` |
-| p99 latency | `{{ms}}` |
-| Availability | `{{%}}` |
-| Data freshness | `{{N/A or lag tolerance}}` |
+| p50 latency | `{{MS}}` |
+| p99 latency | `{{MS}}` |
+| Availability | `{{PCT}}` |
+| Data freshness | `{{FRESHNESS}}` |
 
 ---
 
 ## Change Management
 
-Breaking changes require consumer notification with a minimum of `{{N}}` days lead time. Non-breaking changes (additive fields, new optional parameters) are deployed without advance notice. Deprecated fields are retained for `{{N}}` days after deprecation notice.
+Breaking change notice period: `{{N}}` days. Non-breaking changes deployed without advance notice. Deprecated fields retained for `{{N}}` days.
 
-Versioning strategy: `{{URL versioning / header versioning / none}}`. Previous major version supported until `{{sunset policy}}`.
+Versioning strategy: `{{VERSIONING_STRATEGY}}`. Previous major version supported until `{{SUNSET_POLICY}}`.
 
 ---
 
 ## Contract Validation
 
-Consumer tests against this contract are maintained in `{{CONSUMER_REPO/path/to/tests}}`. Provider must not ship changes that break pinned consumer test suites without coordinating version migration.
+Consumer tests maintained in `{{CONSUMER_REPO/path/to/tests}}`.
