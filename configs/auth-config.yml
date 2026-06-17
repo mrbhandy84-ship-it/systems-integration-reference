@@ -1,0 +1,71 @@
+authentication:
+  # Service-to-service authentication configuration.
+  # Each strategy block defines the auth mechanism for a class of integrations.
+  # Populate environment variables before deployment. Never commit real credentials.
+
+  strategies:
+
+    oauth2_client_credentials:
+      enabled: true
+      grant_type: "client_credentials"
+      token_url: "${OAUTH2_TOKEN_URL}"
+      client_id: "${OAUTH2_CLIENT_ID}"
+      client_secret: "${OAUTH2_CLIENT_SECRET}"
+      default_scope: "${OAUTH2_DEFAULT_SCOPE}"
+      token_cache:
+        enabled: true
+        backend: "${TOKEN_CACHE_BACKEND}"  # memory | redis
+        connection_string: "${TOKEN_CACHE_CONNECTION_STRING}"
+        ttl_buffer_seconds: 60  # Renew this many seconds before expiry
+      retry:
+        max_attempts: 3
+        backoff_ms: 1000
+
+    api_key:
+      enabled: true
+      header_name: "${API_KEY_HEADER_NAME}"  # e.g. "X-API-Key", "Authorization"
+      header_prefix: "${API_KEY_HEADER_PREFIX}"  # e.g. "ApiKey " or "" for bare value
+      key_ref: "${API_KEY_SECRET_REF}"  # Reference to secret manager path
+      rotation:
+        enabled: "${API_KEY_ROTATION_ENABLED}"
+        rotation_interval_days: 90
+        alert_before_expiry_days: 14
+        alert_target: "${OPS_ALERT_TOPIC}"
+
+    mtls:
+      enabled: false  # Enable when mutual TLS is required at the transport layer
+      cert_path: "${MTLS_CERT_PATH}"
+      key_path: "${MTLS_KEY_PATH}"
+      ca_cert_path: "${MTLS_CA_CERT_PATH}"
+      verify_peer: true
+      min_tls_version: "1.2"
+
+    hmac_webhook:
+      enabled: true
+      algorithm: "sha256"
+      secret_ref: "${WEBHOOK_HMAC_SECRET_REF}"
+      header_name: "${WEBHOOK_SIGNATURE_HEADER}"  # e.g. "X-Hub-Signature-256"
+      timestamp_header: "${WEBHOOK_TIMESTAMP_HEADER}"
+      max_timestamp_skew_seconds: 300
+
+secrets:
+  backend: "${SECRETS_BACKEND}"  # aws_secretsmanager | vault | gcp_secretmanager | env
+  config:
+    region: "${SECRETS_REGION}"
+    endpoint: "${SECRETS_ENDPOINT}"
+    cache_ttl_seconds: 300
+    rotation_poll_interval_seconds: 3600
+
+inbound:
+  # Authentication requirements for requests received by this service.
+  require_auth: true
+  allowed_strategies:
+    - "bearer"
+    - "api_key"
+  jwt:
+    issuer: "${JWT_ISSUER}"
+    audience: "${JWT_AUDIENCE}"
+    jwks_url: "${JWKS_URL}"
+    jwks_cache_ttl_seconds: 3600
+    algorithm: "RS256"
+  tenant_claim_field: "tenant_id"

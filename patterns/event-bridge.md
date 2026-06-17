@@ -1,0 +1,11 @@
+# Event Bridge
+
+An event bridge is an intermediary that receives events from one system and routes, transforms, and delivers them to one or more downstream systems. It decouples the event producer from its consumers: the producer does not know who is consuming its events, and consumers do not know who is producing. The bridge owns the routing logic, transformation rules, and delivery guarantees.
+
+The structural role of an event bridge is different from a message queue. A queue is a delivery mechanism; a bridge is an integration architecture component. A bridge may use queues internally for delivery, but it also performs schema translation, event filtering, fan-out to multiple consumers, and dead-letter handling. The distinction matters because bridges introduce a layer that must be maintained, monitored, and evolved separately from the producing and consuming systems.
+
+The most common failure in event bridge design is allowing transformation logic to become complex enough that the bridge itself becomes a critical business logic component rather than a plumbing component. When transformation rules encode business decisions — filtering events based on business rules, computing derived values from incoming data — the bridge becomes harder to change, test, and hand off. Transformation logic in a bridge should be structural, not semantic: renaming fields, mapping enumerations, flattening nested structures. Business logic belongs in the consuming service.
+
+Delivery guarantees at the bridge level must be explicitly designed. At-least-once delivery is achievable with standard queue-backed bridges and idempotent consumers. Exactly-once delivery requires distributed coordination and is rarely necessary in practice — idempotent consumers handle the duplicate delivery case with much less operational complexity. The delivery guarantee claim in any event bridge documentation should be verified against the actual infrastructure, not assumed from the platform's marketing.
+
+Observability at the bridge layer is non-negotiable. Every event that enters should produce a log record with its source event ID, target destination, routing rule applied, and transformation result. Without this, debugging delivery failures or routing anomalies requires reconstructing state from producer and consumer logs — a painful exercise in a high-throughput system.

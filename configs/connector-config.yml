@@ -1,0 +1,94 @@
+connectors:
+  # Each connector definition represents a configured integration point
+  # with an external or internal system. Values marked ${ENV_VAR} are
+  # resolved from the runtime environment. Values marked "# options: ..."
+  # indicate valid choices for that field.
+
+  example_crm:
+    id: "crm-primary"
+    type: "http"
+    base_url: "${CRM_BASE_URL}"
+    timeout_ms: 5000
+    auth:
+      strategy: "oauth2"
+      token_url: "${CRM_TOKEN_URL}"
+      client_id: "${CRM_CLIENT_ID}"
+      client_secret: "${CRM_CLIENT_SECRET}"
+      scope: "${CRM_OAUTH_SCOPE}"
+      token_cache_ttl_seconds: 3600
+    retry:
+      policy: "default"
+      max_attempts: 3
+    rate_limit:
+      requests_per_second: 10
+      burst: 20
+    health_check:
+      enabled: true
+      endpoint: "${CRM_BASE_URL}/health"
+      interval_seconds: 60
+      failure_threshold: 3
+
+  example_data_warehouse:
+    id: "dwh-primary"
+    type: "jdbc"
+    connection_string: "${DWH_CONNECTION_STRING}"
+    pool:
+      min_connections: 2
+      max_connections: 10
+      acquire_timeout_ms: 3000
+      idle_timeout_ms: 600000
+    auth:
+      strategy: "credentials"
+      username: "${DWH_USERNAME}"
+      password: "${DWH_PASSWORD}"
+    schema: "${DWH_SCHEMA}"
+    read_only: true
+    ssl:
+      enabled: true
+      verify_cert: true
+      ca_cert_path: "${DWH_CA_CERT_PATH}"
+
+  example_message_broker:
+    id: "broker-primary"
+    type: "kafka"
+    bootstrap_servers: "${KAFKA_BOOTSTRAP_SERVERS}"
+    auth:
+      strategy: "sasl_ssl"
+      mechanism: "SCRAM-SHA-512"
+      username: "${KAFKA_USERNAME}"
+      password: "${KAFKA_PASSWORD}"
+    ssl:
+      enabled: true
+      verify_cert: true
+    producer:
+      acks: "all"
+      compression: "lz4"
+      batch_size_bytes: 65536
+      linger_ms: 5
+    consumer:
+      group_id: "${SERVICE_NAME}-consumer"
+      auto_offset_reset: "earliest"
+      max_poll_records: 500
+      session_timeout_ms: 30000
+
+  example_object_store:
+    id: "storage-primary"
+    type: "s3_compatible"
+    endpoint: "${STORAGE_ENDPOINT}"
+    region: "${STORAGE_REGION}"
+    bucket: "${STORAGE_BUCKET}"
+    auth:
+      strategy: "iam_role"
+      role_arn: "${STORAGE_ROLE_ARN}"
+    path_prefix: "${STORAGE_PATH_PREFIX}"
+    server_side_encryption: "AES256"
+
+global:
+  connection_timeout_ms: 5000
+  default_retry_policy: "default"
+  circuit_breaker:
+    enabled: true
+    failure_threshold_percent: 50
+    evaluation_window_seconds: 60
+    cooldown_seconds: 30
+    half_open_probe_count: 3
